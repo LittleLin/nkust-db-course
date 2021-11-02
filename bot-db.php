@@ -39,6 +39,41 @@ if (array_key_exists(HTTPHeader::LINE_SIGNATURE, getallheaders())) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             $response = $bot->replyText($replyToken, "您的訂單將於 " . $row["shippedDate"] . " 出貨!");
         }
+
+        if ($userInput == "配送中") {
+            $messageBuilder = new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder();
+
+            // 回覆文字
+            $text = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('您的訂單正在配送中');
+            $messageBuilder->add($text);
+
+            // 回覆地標
+            $location = new \LINE\LINEBot\MessageBuilder\LocationMessageBuilder('【配送員的位置】', '目前所在位置', '22.608687950428024', '120.27231281817662');
+            $messageBuilder->add($location);
+
+            $response = $bot->replyMessage($replyToken, $messageBuilder);
+        }
+        
+        if ($userInput == "已送達") {
+            $messageBuilder = new \LINE\LINEBot\MessageBuilder\MultiMessageBuilder();
+
+            // 回覆文字
+            $text = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('您的訂單已送達');
+            $messageBuilder->add($text);
+
+            // 回覆貼圖
+            $sticker = new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder('11537', '52002734');
+            $messageBuilder->add($sticker);
+
+            // 回覆相片訊息
+            $image = new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder(
+                "https://" . $_SERVER['HTTP_HOST'] . "/Package.jpg", // 大圖
+                "https://" . $_SERVER['HTTP_HOST'] . "/Package-tiny.jpg" // 縮圖
+            );
+            $messageBuilder->add($image);
+
+            $response = $bot->replyMessage($replyToken, $messageBuilder);
+        }
     }
 }
 
